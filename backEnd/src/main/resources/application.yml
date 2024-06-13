@@ -1,0 +1,12 @@
+# 应用服务 WEB 访问端口
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://1.92.95.25:26000/db_tl
+    username: tl
+    password: Aa@3481234872
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
