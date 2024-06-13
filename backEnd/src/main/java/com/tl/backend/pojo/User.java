@@ -1,6 +1,7 @@
 package com.tl.backend.pojo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,9 @@ public class User {
     private String phone;
     @JsonIgnore
     private String password;
+
+    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
     private Timestamp userCreateTime ;
+    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
     private Timestamp userUpdateTime;
 }

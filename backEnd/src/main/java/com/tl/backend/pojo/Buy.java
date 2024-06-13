@@ -1,5 +1,6 @@
 package com.tl.backend.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -18,9 +19,11 @@ public class Buy {
     private String buyUserPhone;
 
     //购买时间
+    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
     private Timestamp buyCreateTime;
 
     //更新时间
+    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
     private Timestamp buyUpdateTime;
 
     //购买数量
