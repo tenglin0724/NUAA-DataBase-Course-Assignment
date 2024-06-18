@@ -15,3 +15,8 @@ export const buyManageDeleteService = (id) => {
 export const buyManageAddService = (params) => {
   return request.post("/buy", params);
 };
+
+//更新购买记录状态
+export const buyManageUpdateService = (id, state) => {
+  return request.put("/buy?id=" + id + "&state=" + state);
+};

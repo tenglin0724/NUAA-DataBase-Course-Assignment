@@ -15,3 +15,8 @@ export const goodManageDeleteService = (id) => {
 export const goodManageAddService = (params) => {
   return request.post("/good", params);
 };
+
+//更新购买记录状态
+export const goodManageUpdateService = (params) => {
+  return request.put("/good", params);
+};

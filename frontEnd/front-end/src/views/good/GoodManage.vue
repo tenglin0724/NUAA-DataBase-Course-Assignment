@@ -37,24 +37,6 @@ const clearSearch = () => {
     goodsList();
 }
 
-//数据模型的校验
-const checkRF = (rule, value1, callback) => {
-    if (value1.min !== '' && value1.max !== '' && value1.max < value1.min) {
-        callback(new Error("数字之间的大小关系错误"))
-    } else if (value1.min === '' && value1.max !== '' || value1.max === '' && value1.min !== '') {
-        callback(new Error("请确保搜索表单输入正确"))
-    } else {
-        callback()
-    }
-}
-
-//校验表单规则
-const rules = {
-    RI1: [
-        { validator: checkRF, triggle: 'blur' }
-    ],
-}
-
 //展示的模型
 const goods = ref([])
 
@@ -76,7 +58,7 @@ const onCurrentChange = (num) => {
 
 
 //商品获取
-import { goodManageListService, goodManageDeleteService, goodManageAddService } from '@/api/good.js';
+import { goodManageListService, goodManageDeleteService, goodManageAddService, goodManageUpdateService } from '@/api/good.js';
 const goodsList = async () => {
     let params = {
         pageNum: pageNum.value,
@@ -90,9 +72,7 @@ const goodsList = async () => {
         priceMin: searchModel.value.priceInterval.min ? searchModel.value.priceInterval.min : null,
         priceMax: searchModel.value.priceInterval.max ? searchModel.value.priceInterval.max : null,
     }
-    console.log(params);
     let result = await goodManageListService(params);
-    console.log(result);
 
     //渲染视图
     total.value = result.data.total;
@@ -173,7 +153,56 @@ const addGood = async () => {
     goodsList()
 }
 
+//实现信息更新功能
+const title = ref('')
+const goodID = ref('')
+const showDrawer = (row) => {
+    title.value = '修改商品信息'
+    visibleDrawer.value = true
+    //绑定数据
+    goodID.value = row.goodIndex
+    goodModel.value.goodDescribe = row.goodDescribe
+    goodModel.value.goodNum = row.goodNum
+    goodModel.value.goodPic = row.goodPic
+    goodModel.value.goodPrice = row.goodPrice
+}
 
+//修改商品信息
+const updateGood = async () => {
+    //封装参数
+    const params = {
+        goodIndex: goodID.value,
+        goodDescribe: goodModel.value.goodDescribe,
+        goodNum: goodModel.value.goodNum,
+        goodPic: goodModel.value.goodPic,
+        goodPrice: goodModel.value.goodPrice,
+    }
+    //发送请求
+    let result = await goodManageUpdateService(params)
+    //处理请求
+    ElMessage.success(result.message ? result.message : "已修改")
+    //更改抽屉显示
+    visibleDrawer.value = false;
+    //清空新建表单内容
+    goodID.value = ''
+    goodModel.value.goodPic = ''
+    goodModel.value.goodDescribe = ''
+    goodModel.value.goodPrice = ''
+    goodModel.value.goodNum = ''
+    //刷新页面
+    goodsList()
+}
+
+//判断是add还是update
+const judgeGood = () => {
+    if (title.value === "添加商品") {
+        addGood()
+    } else if (title.value === "修改商品信息") {
+        updateGood()
+    } else {
+        ElMessage.error("系统错误！")
+    }
+}
 
 </script>
 <template>
@@ -183,13 +212,13 @@ const addGood = async () => {
             <div class="header">
                 <span>商品管理</span>
                 <div class="extra">
-                    <el-button type="primary" @click="visibleDrawer = true">添加商品</el-button>
+                    <el-button type="primary" @click="visibleDrawer = true; title = '添加商品'">添加商品</el-button>
                 </div>
             </div>
         </template>
         <!-- 搜索表单 -->
 
-        <el-form :model="searchModel" :rules="rules">
+        <el-form :model="searchModel">
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="关键词">
@@ -255,7 +284,7 @@ const addGood = async () => {
             <el-table-column label="更新时间" prop="goodUpdateTime"></el-table-column>
             <el-table-column label="操作" width="120">
                 <template #default="{ row }">
-                    <el-button :icon="Edit" circle plain type="primary" @click=""></el-button>
+                    <el-button :icon="Edit" circle plain type="primary" @click="showDrawer(row)"></el-button>
                     <el-button :icon="Delete" circle plain type="danger" @click="goodDelete(row)"></el-button>
                 </template>
             </el-table-column>
@@ -269,7 +298,7 @@ const addGood = async () => {
             @current-change="onCurrentChange" style="margin-top: 20px; justify-content: flex-end" />
 
         <!-- 抽屉 -->
-        <el-drawer v-model="visibleDrawer" title="添加商品" direction="rtl" size="50%">
+        <el-drawer v-model="visibleDrawer" :title="title" direction="rtl" size="50%">
             <!-- 添加文章表单 -->
             <el-form :model="goodModel" label-width="100px">
                 <el-form-item label="商品价格">
@@ -279,13 +308,6 @@ const addGood = async () => {
                     <el-input v-model="goodModel.goodNum" placeholder="请输入商品价格"></el-input>
                 </el-form-item>
                 <el-form-item label="商品图片">
-                    <!-- 
-                    auto-upload:设置是否自动上传
-                    action:设置服务器接口路径
-                    name:设置上传的文件字段名
-                    headers:设置上传的请求头
-                    on-success:设置上传成功的回调函数
-                -->
                     <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false" action="/api/upload"
                         name="file" :headers="{ 'Authorization': tokenStore.token }" :on-success="imgUploadSuccess">
                         <img v-if="goodModel.goodPic" :src="goodModel.goodPic" class="avatar" />
@@ -301,7 +323,7 @@ const addGood = async () => {
                     </div>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="addGood()">发布</el-button>
+                    <el-button type="primary" @click="judgeGood()">发布</el-button>
                 </el-form-item>
             </el-form>
         </el-drawer>

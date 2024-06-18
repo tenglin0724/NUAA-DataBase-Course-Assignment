@@ -64,7 +64,7 @@ const onCurrentChange = (num) => {
 }
 
 //购买记录获取
-import { buyManageListService, buyManageDeleteService, buyManageAddService } from '@/api/buy.js';
+import { buyManageListService, buyManageDeleteService, buyManageAddService, buyManageUpdateService } from '@/api/buy.js';
 const buysList = async () => {
   let params = {
     pageNum: pageNum.value,
@@ -127,7 +127,6 @@ const buyDelete = (row) => {
 
 //新增数据
 import { Plus } from '@element-plus/icons-vue'
-import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { useTokenStore } from '@/stores/token';
 const tokenStore = useTokenStore()
@@ -156,18 +155,43 @@ const addBuy = async () => {
   buysList()
 }
 
-// //定义动态数据，定义抽屉的标题
-// const buyTitle = ref('')
-
-// //定义修改记录事件
-// const showDrawer = (row) => {
-//   visibleDrawer.value = true
-//   buyTitle.value = "修改购买记录"
-//   //复制数据
-//   buyModel.value.buyGoodIndex =
-//     buyModel.value.buyNum = ''
-//   buyModel.value.buyDeliveryIndex = ''
-// }
+//定义动态数据
+const dialogVisible = ref(false)
+const updateState = ref(
+  {
+    id: '',
+    state: ''
+  }
+)
+const updateBuyState = async () => {
+  let result = await buyManageUpdateService(updateState.value.id, updateState.value.state);
+  ElMessage.success(result.message ? result.message : "修改成功")
+  //更改显示效果
+  dialogVisible.value = false
+  //清空表单内容
+  updateState.value.id = ''
+  updateState.value.state = ''
+  //刷新页面
+  buysList()
+}
+const options = [
+  {
+    value: "未支付",
+    label: '未支付',
+  },
+  {
+    value: '派送中',
+    label: '派送中',
+  },
+  {
+    value: '已完成',
+    label: '已完成',
+  },
+  {
+    value: '已退款',
+    label: '已退款',
+  },
+]
 
 
 
@@ -179,7 +203,7 @@ const addBuy = async () => {
       <div class="header">
         <span>购买记录管理</span>
         <div class="extra">
-          <el-button type="primary" @click="visibleDrawer = true; buyTitle = '添加购买记录'">添加购买记录</el-button>
+          <el-button type="primary" @click="visibleDrawer = true;">添加购买记录</el-button>
         </div>
       </div>
     </template>
@@ -260,7 +284,8 @@ const addBuy = async () => {
       <el-table-column label="购买状态" prop="buyState" width="90"></el-table-column>
       <el-table-column label="操作" width="120">
         <template #default="{ row }">
-          <el-button :icon="Edit" circle plain type="primary" @click="showDrawer(row)"></el-button>
+          <el-button :icon="Edit" circle plain type="primary"
+            @click="dialogVisible = true; updateState.id = row.buyIndex; updateState.state = row.buyState"></el-button>
           <el-button :icon="Delete" circle plain type="danger" @click="buyDelete(row)"></el-button>
         </template>
       </el-table-column>
@@ -274,7 +299,7 @@ const addBuy = async () => {
       @current-change="onCurrentChange" style="margin-top: 20px; justify-content: flex-end" />
 
     <!-- 抽屉 -->
-    <el-drawer v-model="visibleDrawer" :title="buyTitle" direction="rtl" size="50%">
+    <el-drawer v-model="visibleDrawer" title="添加购买记录" direction="rtl" size="50%">
       <!-- 添加文章表单 -->
       <el-form :model="buyModel" label-width="100px">
         <el-form-item label="商品ID">
@@ -291,6 +316,26 @@ const addBuy = async () => {
         </el-form-item>
       </el-form>
     </el-drawer>
+    <!-- 弹窗，修改状态 -->
+    <el-dialog v-model="dialogVisible" title="修改购买记录状态" width="30%" :before-close="handleClose">
+
+      <el-form ref=" form" size="large" autocomplete="off" :model="updateState">
+        <el-form-item>
+          <el-select v-model="updateState.state" placeholder="请选择状态" size="large" style="width: 100%">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <div class="dialog-footer">
+            <el-button @click="dialogVisible = false;" style="margin-right: 150px;margin-left: 80px;">取消</el-button>
+            <el-button type="primary" @click="updateBuyState()">
+              修改
+            </el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
   </el-card>
 </template>
 <style lang="scss" scoped>
