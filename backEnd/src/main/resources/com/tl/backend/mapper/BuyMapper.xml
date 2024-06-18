@@ -10,6 +10,36 @@
             <if test="isMy!=null and isMy==true">
                 buy_user_phone=#{phone}
             </if>
+            <if test="isMy==null or isMy==false and userPhone!=null">
+                buy_user_phone=#{phone}
+            </if>
+            <if test="goodIndex!=null">
+                and buy_good_index=#{goodIndex}
+            </if>
+            <if test="deliveryIndex!=null">
+                and buy_delivery_index=#{deliveryIndex}
+            </if>
+            <if test="state!=null">
+                and buy_state=#{state}
+            </if>
+            <if test="priceMin!=null">
+                and buy_price &gt;=priceMin
+            </if>
+            <if test="priceMax!=null">
+                and buy_price &lt;=priceMax
+            </if>
+            <if test="dateMin!=null">
+                and buy_create_time &gt;=dateMin
+            </if>
+            <if test="dateMax!=null">
+                and buy_create_time &lt;=dateMax
+            </if>
+            <if test="numMin!=null">
+                and buy_price &gt;=priceMin
+            </if>
+            <if test="numMax!=null">
+                and buy_num &lt;=priceMin
+            </if>
         </where>
 
     </select>

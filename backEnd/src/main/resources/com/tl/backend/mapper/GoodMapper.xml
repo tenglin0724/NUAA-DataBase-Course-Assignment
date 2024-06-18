@@ -8,10 +8,22 @@
         select * from good
         <where>
             <if test="isMy!=null and isMy==true">
-                good_owner=#{phone}
+                good_owner=#{myPhone}
             </if>
-            <if test="min!=null and max!=null">
-               and good_price between #{min} and #{max}
+            <if test="isMy==null or isMy==false and userPhone!=null">
+                good_owner=#{userPhone}
+            </if>
+            <if test="keyWord!=null">
+               and good_describe like '%keyWord%'
+            </if>
+            <if test="dateMin!=null and dateMax!=null">
+               and good_create_date between #{dateMin} and #{dateMax}
+            </if>
+            <if test="priceMin!=null and priceMax!=null">
+                and good_price between #{priceMin} and #{priceMax}
+            </if>
+            <if test="numMin!=null and numMax!=null">
+                and good_num between #{numMin} and #{numMax}
             </if>
         </where>
 

@@ -29,12 +29,24 @@ public class GoodController {
             Integer pageSize,
             //为1表示是用户本人发布的商品
             @RequestParam(required = false) boolean isMy,
+            //用于指定拥有者
+            @RequestParam(required = false) String userPhone,
+            //用于指定关键词
+            @RequestParam(required = false) String keyWord,
             //用于指定价格最小值
-            @RequestParam(required = false) Object min,
+            @RequestParam(required = false) Object priceMin,
             //用于指定价格最大值
-            @RequestParam(required = false) Object max
+            @RequestParam(required = false) Object priceMax,
+            //用于指定日期最小值
+            @RequestParam(required = false) Object dateMin,
+            //用于指定日期最大值
+            @RequestParam(required = false) Object dateMax,
+            //用于指定价格最小值
+            @RequestParam(required = false) Object numMin,
+            //用于指定价格最大值
+            @RequestParam(required = false) Object numMax
     ){
-        PageBean<Good> pageBean = goodService.list(pageNum,pageSize,isMy,min,max);
+        PageBean<Good> pageBean = goodService.list(pageNum,pageSize,isMy,userPhone,keyWord,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
         return Result.success(pageBean);
     }
 

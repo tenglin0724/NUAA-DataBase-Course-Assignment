@@ -19,11 +19,11 @@ public class Buy {
     private String buyUserPhone;
 
     //购买时间
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private Timestamp buyCreateTime;
 
     //更新时间
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private Timestamp buyUpdateTime;
 
     //购买数量

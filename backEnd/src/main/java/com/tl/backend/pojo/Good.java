@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 public class Good {
 
     //货品图片
-    @URL
+//    @URL
     @NotNull
     private String goodPic;
 
@@ -33,11 +33,11 @@ public class Good {
     private int goodNum;
 
     //货品创建时间
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private Timestamp goodCreateTime;
 
     //货品修改时间
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private Timestamp goodUpdateTime;
 
     //货品拥有者

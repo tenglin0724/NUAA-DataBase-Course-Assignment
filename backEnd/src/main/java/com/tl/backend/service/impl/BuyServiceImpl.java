@@ -41,27 +41,6 @@ public class BuyServiceImpl implements BuyService {
     }
 
     @Override
-    public PageBean<Buy> list(Integer pageNum, Integer pageSize, boolean isMy) {
-        //1. 创建PageBean对象
-        PageBean<Buy> pb = new PageBean<>();
-        //2. 开启分页查询
-        PageHelper.startPage(pageNum,pageSize);
-        //3. 调用Mapper
-        Map<String,Object> map = ThreadLocalUtil.get();
-        String phone =(String) map.get("phone");
-
-        List<Buy> goods = buyMapper.list(phone,isMy);
-        //page中提供了方法，可以获取PageHelper分页查询获得的总记录条数和对应的数据
-        Page<Buy> p =(Page<Buy>)goods;
-
-        //把数据填充到PageBean中
-        pb.setTotal(p.getTotal());
-        pb.setItems(p.getResult());
-
-        return pb;
-    }
-
-    @Override
     public Buy detail(Integer id) {
         Buy buy = buyMapper.detail(id);
         return buy;
@@ -76,5 +55,26 @@ public class BuyServiceImpl implements BuyService {
     @Override
     public void updateState(Integer id, String state) {
         buyMapper.update(id,state);
+    }
+
+    @Override
+    public PageBean<Buy> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String goodIndex, String deliveryIndex, String state, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax) {
+        //1. 创建PageBean对象
+        PageBean<Buy> pb = new PageBean<>();
+        //2. 开启分页查询
+        PageHelper.startPage(pageNum,pageSize);
+        //3. 调用Mapper
+        Map<String,Object> map = ThreadLocalUtil.get();
+        String myPhone =(String) map.get("phone");
+
+        List<Buy> goods = buyMapper.list(myPhone,isMy,userPhone,goodIndex,deliveryIndex,state,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
+        //page中提供了方法，可以获取PageHelper分页查询获得的总记录条数和对应的数据
+        Page<Buy> p =(Page<Buy>)goods;
+
+        //把数据填充到PageBean中
+        pb.setTotal(p.getTotal());
+        pb.setItems(p.getResult());
+
+        return pb;
     }
 }

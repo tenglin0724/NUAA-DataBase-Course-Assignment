@@ -29,7 +29,7 @@ public class Delivery {
     private String deliveryPhone;
 
     //派送地址的创建地址
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private String deliveryCreateTime;
 
     //派送的拥有者

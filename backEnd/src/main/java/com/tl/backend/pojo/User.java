@@ -25,8 +25,8 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private Timestamp userCreateTime ;
-    @JsonFormat(pattern = "YYYY-MM-DD hh-mm-ss")
+    @JsonFormat(pattern = "YYYY-MM-dd hh:mm:ss")
     private Timestamp userUpdateTime;
 }

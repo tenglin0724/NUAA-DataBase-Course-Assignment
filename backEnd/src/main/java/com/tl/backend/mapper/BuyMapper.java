@@ -12,9 +12,6 @@ public interface BuyMapper {
             "values (#{buyGoodIndex},#{buyUserPhone},#{buyCreateTime},#{buyUpdateTime},#{buyNum},#{buyPrice},#{buyState},#{buyDeliveryIndex})")
     void add(Buy buy);
 
-    //使用xml配置文件
-    List<Buy> list(@Param("phone") String phone,@Param("isMy") boolean isMy);
-
     @Select("select * from buy where buy_index=#{id}")
     Buy detail(@Param("id") Integer id);
 
@@ -24,4 +21,6 @@ public interface BuyMapper {
     @Update("update buy set buy_state=#{state},buy_update_time=now() where buy_index=#{id}")
     void update(@Param("id") Integer id,@Param("state") String state);
 
+    //使用xml配置文件
+    List<Buy> list(@Param("myPhone") String myPhone, @Param("isMy") boolean isMy, @Param("userPhone") String userPhone,@Param("goodIndex") String goodIndex, @Param("deliveryIndex") String deliveryIndex,@Param("state") String state,@Param("priceMin") Object priceMin,@Param("priceMax") Object priceMax,@Param("dateMin") Object dateMin,@Param("dateMax") Object dateMax,@Param("numMin") Object numMin,@Param("numMax") Object numMax);
 }

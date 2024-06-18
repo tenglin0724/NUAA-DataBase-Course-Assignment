@@ -45,9 +45,29 @@ public class BuyController {
             Integer pageNum,
             Integer pageSize,
             //用于判断是否为本人的购买记录
-            @RequestParam(required = false) boolean isMy
+            @RequestParam(required = false) boolean isMy,
+            //用于指定拥有者
+            @RequestParam(required = false) String userPhone,
+            //用于指定购买的商品
+            @RequestParam(required = false) String goodIndex,
+            //用于指定购买的派送地址
+            @RequestParam(required = false) String deliveryIndex,
+            //用于指定购买记录的派送状态
+            @RequestParam(required = false) String state,
+            //用于指定价格最小值
+            @RequestParam(required = false) Object priceMin,
+            //用于指定价格最大值
+            @RequestParam(required = false) Object priceMax,
+            //用于指定日期最小值
+            @RequestParam(required = false) Object dateMin,
+            //用于指定日期最大值
+            @RequestParam(required = false) Object dateMax,
+            //用于指定价格最小值
+            @RequestParam(required = false) Object numMin,
+            //用于指定价格最大值
+            @RequestParam(required = false) Object numMax
     ){
-        PageBean<Buy> pageBean = buyService.list(pageNum,pageSize,isMy);
+        PageBean<Buy> pageBean = buyService.list(pageNum,pageSize,isMy,userPhone,goodIndex,deliveryIndex,state,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
         return Result.success(pageBean);
     }
 
