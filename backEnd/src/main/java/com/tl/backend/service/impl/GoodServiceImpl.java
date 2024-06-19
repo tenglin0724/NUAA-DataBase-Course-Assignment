@@ -6,9 +6,10 @@ import com.tl.backend.mapper.GoodMapper;
 import com.tl.backend.pojo.Good;
 import com.tl.backend.pojo.PageBean;
 import com.tl.backend.service.GoodService;
+import com.tl.backend.util.CamelToUnderlineUtil;
+import org.apache.commons.lang3.StringUtils;
 import com.tl.backend.util.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -56,7 +57,11 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public PageBean<Good> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String keyWord, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax) {
+    public PageBean<Good> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String keyWord, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax,String prop,String order) {
+        //判断prop是否为空
+        if(prop!=null){
+            prop= CamelToUnderlineUtil.camel2under(prop);
+        }
         //1. 创建PageBean对象
         PageBean<Good> pb = new PageBean<>();
         //2. 开启分页查询
@@ -65,9 +70,10 @@ public class GoodServiceImpl implements GoodService {
         Map<String,Object> map = ThreadLocalUtil.get();
         String myPhone =(String) map.get("phone");
 
-        List<Good> goods = goodMapper.list(myPhone,isMy,userPhone,keyWord,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
+        List<Good> goods = goodMapper.list(myPhone,isMy,userPhone,keyWord,priceMin,priceMax,dateMin,dateMax,numMin,numMax,prop,order);
         //page中提供了方法，可以获取PageHelper分页查询获得的总记录条数和对应的数据
         Page<Good> p =(Page<Good>)goods;
+
 
         //把数据填充到PageBean中
         pb.setTotal(p.getTotal());

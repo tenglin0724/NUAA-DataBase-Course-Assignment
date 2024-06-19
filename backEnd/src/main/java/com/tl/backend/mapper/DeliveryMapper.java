@@ -12,8 +12,8 @@ public interface DeliveryMapper {
             "values (#{deliveryName},#{deliveryArea},#{deliveryFullAddress},#{deliveryPhone},#{deliveryCreateTime},#{deliveryOwner})")
     void add(Delivery delivery);
 
-    @Select("select * from delivery where delivery_owner=#{phone}")
-    List<Delivery> list(@Param("phone") String phone);
+//    @Select("select * from delivery where delivery_owner=#{phone}")
+//    List<Delivery> list(@Param("phone") String phone);
 
     @Select("select * from delivery where delivery_index=#{id};")
     Delivery detail(@Param("id") Integer id);
@@ -23,4 +23,7 @@ public interface DeliveryMapper {
 
     @Delete("delete from delivery where delivery_index=#{id}")
     void delete(Integer id);
+
+    //使用配置文件
+    List<Delivery> list(@Param("myPhone") String myPhone,@Param("isMy") boolean isMy,@Param("phone") String phone,@Param("deliveryName") String deliveryName,@Param("deliveryPhone") String deliveryPhone, @Param("addressKey") String addressKey,@Param("createMin") Object createMin,@Param("createMax") Object createMax);
 }

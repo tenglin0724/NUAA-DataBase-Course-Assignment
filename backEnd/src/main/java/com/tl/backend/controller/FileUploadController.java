@@ -17,7 +17,7 @@ public class FileUploadController {
         String originalFilename = file.getOriginalFilename();
         //保证文件的名字是唯一的,从而防止文件覆盖
         String filename = UUID.randomUUID().toString()+originalFilename.substring(originalFilename.lastIndexOf("."));
-        file.transferTo(new File("D:\\devp\\pic\\"+filename));
+        file.transferTo(new File("D:\\devp\\dataBaseProjects\\frontEnd\\front-end\\src\\pic\\"+filename));
         return Result.success(filename);
     }
 }

@@ -1,7 +1,12 @@
 <script setup>
 import {
   Edit,
-  Delete
+  Delete,
+  Picture,
+  Memo,
+  Money,
+  Iphone,
+  Coin
 } from '@element-plus/icons-vue'
 
 import { ref } from 'vue'

@@ -1,6 +1,7 @@
 package com.tl.backend.controller;
 
 import com.tl.backend.pojo.Delivery;
+import com.tl.backend.pojo.PageBean;
 import com.tl.backend.pojo.Result;
 import com.tl.backend.service.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,26 @@ public class DeliveryController {
 
     //获取派送地址列表
     @GetMapping
-    public Result<List<Delivery>>list(){
-        List<Delivery> deliveries = deliveryService.list();
-        return Result.success(deliveries);
+    public Result<PageBean<Delivery>>list(
+            Integer pageNum,
+            Integer pageSize,
+            //用于判断是否为本人的收货地址
+            @RequestParam(required = false) boolean isMy,
+            //用于指定所有者电话
+            @RequestParam(required = false) String phone,
+            //用于指定收货人姓名
+            @RequestParam(required = false) String deliveryName,
+            //用于指定收货人号码
+            @RequestParam(required = false) String deliveryPhone,
+            //用于指定地址关键词
+            @RequestParam(required = false) String addressKey,
+            //用于指定日期最小值
+            @RequestParam(required = false) Object createMin,
+            //用于指定日期最大值
+            @RequestParam(required = false) Object createMax
+    ){
+        PageBean<Delivery> pageBean = deliveryService.list(pageNum,pageSize,isMy,phone,deliveryName,deliveryPhone,addressKey,createMin,createMax);
+        return Result.success(pageBean);
     }
 
     //获取详细的地址信息

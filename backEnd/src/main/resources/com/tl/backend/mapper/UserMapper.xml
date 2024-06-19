@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tl.backend.mapper.UserMapper">
+    <select id="list" resultType="com.tl.backend.pojo.User">
+        select * from my_user
+        <where>
+            <if test="phone!=null">
+                phone = #{phone}
+            </if>
+            <if test="userName!=null">
+                and username=#{userName}
+            </if>
+            <if test="sex!=null">
+                and sex=#{sex}
+            </if>
+            <if test="address!=null">
+                and user_address=#{address}
+            </if>
+            <if test="brithMin!=null">
+                and brithday &gt;=#{brithMin}
+            </if>
+            <if test="brithMax!=null">
+                and brithday &lt;=#{brithMax}
+            </if>
+            <if test="createMin!=null">
+                and user_create_time &gt;=#{createMin}
+            </if>
+            <if test="createMax!=null">
+                and user_create_time &lt;=#{createMax}
+            </if>
+        </where>
+
+
+    </select>
+</mapper>

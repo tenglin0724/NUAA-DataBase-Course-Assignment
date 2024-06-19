@@ -1,5 +1,6 @@
 package com.tl.backend.controller;
 
+import com.tl.backend.pojo.PageBean;
 import com.tl.backend.pojo.Result;
 import com.tl.backend.pojo.User;
 import com.tl.backend.service.UserService;
@@ -126,5 +127,43 @@ public class UserController {
         //校验完成
         userService.updatePwd(new_pwd);
         return Result.success();
+    }
+
+    //获取用户列表
+    @GetMapping
+    public Result<PageBean<User>> list(
+            Integer pageNum,
+            Integer pageSize,
+            //用于指定电话号码
+            @RequestParam(required = false) String phone,
+            //用于指定姓名
+            @RequestParam(required = false) String userName,
+            //用于指定性别
+            @RequestParam(required = false) String sex,
+            //用于指定常驻地址
+            @RequestParam(required = false) String address,
+            //用于指定出生最早日期
+            @RequestParam(required = false) Object brithMin,
+            //用于指定出生最晚日期
+            @RequestParam(required = false) Object brithMax,
+            //用于指定创建最早日期
+            @RequestParam(required = false) Object createMin,
+            //用于指定创建最晚日期
+            @RequestParam(required = false) Object createMax
+    ){
+        PageBean<User> pageBean=userService.list(pageNum,pageSize,phone,userName,sex,address,brithMin,brithMax,createMin,createMax);
+        return Result.success(pageBean);
+    }
+
+    //删除用户
+    @DeleteMapping
+    public Result delete(@RequestParam String phone){
+        //判断是否为指定的管理员
+        if(phone.equals("19103878295")){
+            return Result.error("管理员用户不可删除");
+        }else{
+            userService.delete(phone);
+            return Result.success();
+        }
     }
 }

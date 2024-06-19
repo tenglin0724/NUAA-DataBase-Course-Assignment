@@ -44,9 +44,13 @@ public class GoodController {
             //用于指定价格最小值
             @RequestParam(required = false) Object numMin,
             //用于指定价格最大值
-            @RequestParam(required = false) Object numMax
+            @RequestParam(required = false) Object numMax,
+            //用于指定排序的列
+            @RequestParam(required = false) String prop,
+            //用于指定排序的方式
+            @RequestParam(required = false) String order
     ){
-        PageBean<Good> pageBean = goodService.list(pageNum,pageSize,isMy,userPhone,keyWord,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
+        PageBean<Good> pageBean = goodService.list(pageNum,pageSize,isMy,userPhone,keyWord,priceMin,priceMax,dateMin,dateMax,numMin,numMax,prop,order);
         return Result.success(pageBean);
     }
 
@@ -71,4 +75,5 @@ public class GoodController {
         goodService.delete(id);
         return Result.success();
     }
+
 }

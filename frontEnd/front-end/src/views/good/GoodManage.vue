@@ -1,7 +1,12 @@
 <script setup>
 import {
     Edit,
-    Delete
+    Delete,
+    Picture,
+    Memo,
+    Money,
+    Iphone,
+    Coin
 } from '@element-plus/icons-vue'
 
 import { ref } from 'vue'
@@ -21,7 +26,9 @@ const searchModel = ref({
     priceInterval: {
         min: '',
         max: ''
-    }
+    },
+    order: '',
+    prop: ''
 })
 //清空事件
 const clearSearch = () => {
@@ -33,6 +40,8 @@ const clearSearch = () => {
     searchModel.value.priceInterval.max = ''
     searchModel.value.numInterval.min = ''
     searchModel.value.numInterval.max = ''
+    searchModel.value.order = ''
+    searchModel.value.prop = ''
     //刷新
     goodsList();
 }
@@ -71,6 +80,8 @@ const goodsList = async () => {
         numMax: searchModel.value.numInterval.max ? searchModel.value.numInterval.max : null,
         priceMin: searchModel.value.priceInterval.min ? searchModel.value.priceInterval.min : null,
         priceMax: searchModel.value.priceInterval.max ? searchModel.value.priceInterval.max : null,
+        order: searchModel.value.order ? searchModel.value.order : null,
+        prop: searchModel.value.prop ? searchModel.value.prop : null,
     }
     let result = await goodManageListService(params);
 
@@ -131,8 +142,7 @@ const goodModel = ref({
 
 //图片上传函数
 const imgUploadSuccess = (result) => {
-    goodModel.value.goodPic = "D:\\devp\\pic\\" + result.data
-    console.log(result.data);
+    goodModel.value.goodPic = "/src/pic/" + result.data
 }
 
 //添加商品
@@ -204,6 +214,19 @@ const judgeGood = () => {
     }
 }
 
+//表格排序
+const mySort = async (column) => {
+    //经测试，只能在后端排序，因为是在后端进行分页的
+    searchModel.value.prop = column.prop
+    searchModel.value.order = column.order
+    //指定页面为第一页
+    pageNum.value = 1
+    //刷新页面
+    goodsList()
+
+
+}
+
 </script>
 <template>
     <el-card class="page-container">
@@ -222,7 +245,7 @@ const judgeGood = () => {
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="关键词">
-                        <el-input placeholder="请输入关键词" v-model="searchModel.keyWord"
+                        <el-input :prefix-icon="Memo" placeholder="请输入关键词" v-model="searchModel.keyWord"
                             style="position: relative;left: 20px; width: 300px;"></el-input>
                     </el-form-item>
                 </el-col>
@@ -239,26 +262,26 @@ const judgeGood = () => {
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="商品价格" v-model="searchModel.priceInterval">
-                        <el-input placeholder="商品最低价格" v-model="searchModel.priceInterval.min"
-                            style="position: relative;left: 6px; width: 120px;"></el-input>
-                        <el-input placeholder="商品最高价格" v-model="searchModel.priceInterval.max"
-                            style="position: relative;left: 60px; width: 120px;"></el-input>
+                        <el-input :prefix-icon="Money" placeholder="商品最低价格" v-model="searchModel.priceInterval.min"
+                            style="position: relative;left: 6px; width: 150px;"></el-input>
+                        <el-input :prefix-icon="Money" placeholder="商品最高价格" v-model="searchModel.priceInterval.max"
+                            style="position: relative;left: 20px; width: 150px;"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="商品数量">
-                        <el-input placeholder="商品最少数量" v-model="searchModel.numInterval.min"
-                            style="position: relative;left: 6px; width: 120px;"></el-input>
-                        <el-input placeholder="商品最多数量" v-model="searchModel.numInterval.max"
-                            style="position: relative;left: 60px; width: 120px;"></el-input>
+                        <el-input :prefix-icon="Coin" placeholder="商品最少数量" v-model="searchModel.numInterval.min"
+                            style="position: relative;left: 6px; width: 150px;"></el-input>
+                        <el-input :prefix-icon="Coin" placeholder="商品最多数量" v-model="searchModel.numInterval.max"
+                            style="position: relative;left: 20px; width: 150px;"></el-input>
                     </el-form-item>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="12">
                     <el-form-item label="所有者">
-                        <el-input placeholder="请输入号码" v-model="searchModel.userPhone"
-                            style="position: relative;left: 20px; width: 120px;"></el-input>
+                        <el-input :prefix-icon="Iphone" placeholder="请输入号码" v-model="searchModel.userPhone"
+                            style="position: relative;left: 20px; width: 200px;"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -273,15 +296,35 @@ const judgeGood = () => {
         <el-divider />
 
         <!-- 商品列表 -->
-        <el-table :data="goods" border style="width: 100%">
-            <el-table-column label="id" prop="goodIndex" width="50"></el-table-column>
+
+        <el-table :data="goods" border style="width: 100%" @sort-change="mySort">
+            <el-table-column label="id" prop="goodIndex" width="70" sortable="custom"></el-table-column>
             <el-table-column label="商品所有者" prop="goodOwner" width="120"></el-table-column>
-            <el-table-column label="商品简介" prop="goodDescribe"></el-table-column>
-            <el-table-column label="商品价格" prop="goodPrice" width="90"> </el-table-column>
-            <el-table-column label="商品数量" prop="goodNum" width="90"></el-table-column>
-            <el-table-column label="商品图片" prop="goodPic"> </el-table-column>
-            <el-table-column label="创建时间" prop="goodCreateTime"></el-table-column>
-            <el-table-column label="更新时间" prop="goodUpdateTime"></el-table-column>
+            <el-table-column label="商品简介" prop="goodDescribe" show-overflow-tooltip>
+                <template #default="scope">
+                    <div v-html="scope.row.goodDescribe"></div>
+                </template>
+            </el-table-column>
+            <el-table-column label="商品价格" prop="goodPrice" width="120" sortable="custom"> </el-table-column>
+            <el-table-column label="商品数量" prop="goodNum" width="120" sortable="custom"></el-table-column>
+            <el-table-column label="商品图片" prop="goodPic" width="100">
+                <template #default="scope">
+                    <div style="display: flex; align-items: center">
+                        <el-image :preview-src-list="scope.row.goodPic" :src="scope.row.goodPic"
+                            style="width: 50px;height: 50px;" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2">
+                            <template #error>
+                                <div class="image-slot">
+                                    <el-icon>
+                                        <Picture />
+                                    </el-icon>
+                                </div>
+                            </template>
+                        </el-image>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="创建时间" prop="goodCreateTime" sortable="custom"></el-table-column>
+            <el-table-column label="更新时间" prop="goodUpdateTime" sortable="custom"></el-table-column>
             <el-table-column label="操作" width="120">
                 <template #default="{ row }">
                     <el-button :icon="Edit" circle plain type="primary" @click="showDrawer(row)"></el-button>
@@ -310,7 +353,7 @@ const judgeGood = () => {
                 <el-form-item label="商品图片">
                     <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false" action="/api/upload"
                         name="file" :headers="{ 'Authorization': tokenStore.token }" :on-success="imgUploadSuccess">
-                        <img v-if="goodModel.goodPic" :src="goodModel.goodPic" class="avatar" />
+                        <img v-if="goodModel.goodPic" :src=goodModel.goodPic class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon">
                             <Plus />
                         </el-icon>

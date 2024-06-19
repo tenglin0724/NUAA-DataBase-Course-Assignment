@@ -9,9 +9,6 @@ public interface GoodService {
     //新增商品
     void add(Good good);
 
-
-//    PageBean<Good> list(Integer pageNum, Integer pageSize, boolean isMy, Object min,Object max);
-
     //实现货品修改
     void update(Good good);
 
@@ -22,5 +19,5 @@ public interface GoodService {
     Good detail(Integer id);
 
     //实现条件分页查询
-    PageBean<Good> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String keyWord, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax);
+    PageBean<Good> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String keyWord, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax,String prop,String order);
 }

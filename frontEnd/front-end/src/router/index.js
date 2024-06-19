@@ -7,7 +7,8 @@ import BuyManage from "@/views/buy/BuyManage.vue";
 import BuyShow from "@/views/buy/BuyShow.vue";
 import GoodManage from "@/views/good/GoodManage.vue";
 import GoodShow from "@/views/good/GoodShow.vue";
-import DeliveryManage from "@/views/user/DeliveryManage.vue";
+import DeliveryManage from "@/views/delivery/DeliveryManage.vue";
+import DeliveryShow from "@/views/delivery/DeliveryShow.vue";
 import UserAvatar from "@/views/user/UserAvatar.vue";
 import UserInfo from "@/views/user/UserInfo.vue";
 import UserResetPassword from "@/views/user/UserResetPassword.vue";
@@ -25,18 +26,19 @@ const routes = [
       { path: "/good/manage", component: GoodManage },
       { path: "/buy/manage", component: BuyManage },
       { path: "/user/manage", component: UserManage },
+      { path: "/delivery/manage", component: DeliveryManage },
     ],
   },
   {
     path: "/",
     component: Layout,
     //配置重定向的路由
-    redirect: "/good/show",
+    redirect: "/login",
     //配置子路由
     children: [
       { path: "/good/show", component: GoodShow },
       { path: "/buy/show", component: BuyShow },
-      { path: "/user/delivery", component: DeliveryManage },
+      { path: "/delivery/show", component: DeliveryShow },
       { path: "/user/avatar", component: UserAvatar },
       { path: "/user/info", component: UserInfo },
       { path: "/user/reSetPassword", component: UserResetPassword },

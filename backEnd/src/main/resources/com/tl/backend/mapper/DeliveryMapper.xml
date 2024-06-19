@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tl.backend.mapper.DeliveryMapper">
+    <!--动态sql-->
+    <select id="list" resultType="com.tl.backend.pojo.Delivery">
+        select * from delivery
+        <where>
+            <if test="isMy!=null and isMy==true">
+                delivery_owner=#{myPhone}
+            </if>
+            <if test="isMy==null or isMy==false and phone!=null">
+                delivery_owner=#{phone}
+            </if>
+            <if test="deliveryName!=null">
+                and delivery_name = #{deliveryName}
+            </if>
+            <if test="deliveryPhone!=null">
+                and delivery_phone=#{deliveryPhone}
+            </if>
+            <if test="addressKey!=null">
+                and delivery_area like concat('%',#{addressKey},'%')
+                or  delivery_full_address like concat('%',#{addressKey},'%')
+            </if>
+            <if test="createMin!=null">
+                and delivery_create_time &gt;=#{createMin}
+            </if>
+            <if test="createMax!=null">
+                and delivery_create_time &lt;=#{createMax}
+            </if>
+        </where>
+
+
+    </select>
+</mapper>

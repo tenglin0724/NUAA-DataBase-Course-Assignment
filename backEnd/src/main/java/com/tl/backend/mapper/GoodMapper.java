@@ -22,5 +22,5 @@ public interface GoodMapper {
     Good detail(@Param("id") Integer id);
 
     //使用配置文件写动态sql
-    List<Good> list(@Param("myPhone") String myPhone,@Param("isMy") boolean isMy,@Param("userPhone") String userPhone,@Param("keyWord") String keyWord,@Param("priceMin") Object priceMin,@Param("priceMax") Object priceMax,@Param("dateMin") Object dateMin,@Param("dateMax") Object dateMax,@Param("numMin") Object numMin,@Param("numMax") Object numMax);
+    List<Good> list(@Param("myPhone") String myPhone,@Param("isMy") boolean isMy,@Param("userPhone") String userPhone,@Param("keyWord") String keyWord,@Param("priceMin") Object priceMin,@Param("priceMax") Object priceMax,@Param("dateMin") Object dateMin,@Param("dateMax") Object dateMax,@Param("numMin") Object numMin,@Param("numMax") Object numMax,@Param("prop") String prop,@Param("order") String order);
 }

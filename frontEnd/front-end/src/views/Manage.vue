@@ -39,6 +39,12 @@ import avatar from '@/assets/default.png'
           </el-icon>
           <span>用户信息</span>
         </el-menu-item>
+        <el-menu-item index="/delivery/manage">
+          <el-icon>
+            <GoodsFilled />
+          </el-icon>
+          <span>地址信息</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <!-- 右侧主区域 -->

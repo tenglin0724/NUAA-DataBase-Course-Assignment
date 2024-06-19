@@ -21,3 +21,14 @@ export const userLoginService = (loginData) => {
   //返回相应数据
   return request.post("/user/login", params);
 };
+
+//用户列表数据获取
+//请求分页查询
+export const userManageListService = (params) => {
+  return request.get("/user", { params: params });
+};
+
+//请求删除记录
+export const userManageDeleteService = (phone) => {
+  return request.delete("/user?phone=" + phone);
+};

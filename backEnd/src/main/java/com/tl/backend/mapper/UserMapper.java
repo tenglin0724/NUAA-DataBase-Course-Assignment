@@ -4,6 +4,8 @@ package com.tl.backend.mapper;
 import com.tl.backend.pojo.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
     @Select("select * from my_user where phone=#{phone}")
@@ -21,4 +23,10 @@ public interface UserMapper {
 
     @Update("update my_user set password=#{new_pwd},user_update_time=now() where phone=#{phone}")
     void updatePwd(@Param("new_pwd") String new_pwd,@Param("phone") String phone);
+
+    //使用配置文件实现查询
+    List<User> list(@Param("phone")String phone,@Param("userName") String userName,@Param("sex") String sex,@Param("address") String address,@Param("brithMin") Object brithMin,@Param("brithMax") Object brithMax,@Param("createMin") Object createMin,@Param("createMax") Object createMax);
+
+    @Delete("delete from my_user where phone=#{phone}")
+    void delete(String phone);
 }

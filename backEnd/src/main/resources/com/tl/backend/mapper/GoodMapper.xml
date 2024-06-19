@@ -14,19 +14,39 @@
                 good_owner=#{userPhone}
             </if>
             <if test="keyWord!=null">
-               and good_describe like '%keyWord%'
+               and good_describe like concat('%',#{keyWord},'%')
             </if>
-            <if test="dateMin!=null and dateMax!=null">
-               and good_create_date between #{dateMin} and #{dateMax}
+            <if test="dateMin!=null">
+                and good_create_date &gt;=#{dateMin}
             </if>
-            <if test="priceMin!=null and priceMax!=null">
-                and good_price between #{priceMin} and #{priceMax}
+            <if test="dateMax!=null">
+               and good_create_date &lt;=#{dateMax}
             </if>
-            <if test="numMin!=null and numMax!=null">
-                and good_num between #{numMin} and #{numMax}
+            <if test="priceMin!=null">
+                and good_price &gt;=#{priceMin}
+            </if>
+            <if test="priceMax!=null">
+                and good_price &lt;=#{priceMax}
+            </if>
+            <if test="numMin!=null">
+                and good_num &gt;=#{numMin}
+            </if>
+            <if test="numMax!=null">
+                and good_num &lt;=#{numMax}
             </if>
         </where>
-
+        --         注意这里只能使用$否则会匹配不出来
+        <choose>
+            <when test="prop != null and order == 'descending'">
+                order by ${prop} desc
+            </when>
+            <when test="prop != null and order == 'ascending'">
+                order by ${prop} asc
+            </when>
+            <otherwise>
+                order by good_index
+            </otherwise>
+        </choose>
 
     </select>
 </mapper>
