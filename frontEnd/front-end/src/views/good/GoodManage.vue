@@ -40,8 +40,6 @@ const clearSearch = () => {
     searchModel.value.priceInterval.max = ''
     searchModel.value.numInterval.min = ''
     searchModel.value.numInterval.max = ''
-    searchModel.value.order = ''
-    searchModel.value.prop = ''
     //刷新
     goodsList();
 }
@@ -52,7 +50,7 @@ const goods = ref([])
 //分页条数据模型
 const pageNum = ref(1)//当前页
 const total = ref(20)//总条数
-const pageSize = ref(3)//每页条数
+const pageSize = ref(5)//每页条数
 
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
@@ -142,7 +140,7 @@ const goodModel = ref({
 
 //图片上传函数
 const imgUploadSuccess = (result) => {
-    goodModel.value.goodPic = "/src/pic/" + result.data
+    goodModel.value.goodPic = '/src/pic/' + result.data
 }
 
 //添加商品
@@ -215,7 +213,7 @@ const judgeGood = () => {
 }
 
 //表格排序
-const mySort = async (column) => {
+const mySort = (column) => {
     //经测试，只能在后端排序，因为是在后端进行分页的
     searchModel.value.prop = column.prop
     searchModel.value.order = column.order
@@ -223,9 +221,12 @@ const mySort = async (column) => {
     pageNum.value = 1
     //刷新页面
     goodsList()
-
-
 }
+
+//调试代码
+// const show = (pic) => {
+//     console.log(pic);
+// }
 
 </script>
 <template>
@@ -298,11 +299,13 @@ const mySort = async (column) => {
         <!-- 商品列表 -->
 
         <el-table :data="goods" border style="width: 100%" @sort-change="mySort">
-            <el-table-column label="id" prop="goodIndex" width="70" sortable="custom"></el-table-column>
+            <el-table-column label="id" prop="goodIndex" width="100" sortable="custom"></el-table-column>
             <el-table-column label="商品所有者" prop="goodOwner" width="120"></el-table-column>
             <el-table-column label="商品简介" prop="goodDescribe" show-overflow-tooltip>
                 <template #default="scope">
-                    <div v-html="scope.row.goodDescribe"></div>
+                    <div v-html="scope.row.goodDescribe">
+
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column label="商品价格" prop="goodPrice" width="120" sortable="custom"> </el-table-column>
@@ -310,7 +313,7 @@ const mySort = async (column) => {
             <el-table-column label="商品图片" prop="goodPic" width="100">
                 <template #default="scope">
                     <div style="display: flex; align-items: center">
-                        <el-image :preview-src-list="scope.row.goodPic" :src="scope.row.goodPic"
+                        <el-image :preview-src-list="scope.row.goodPic" :src=scope.row.goodPic
                             style="width: 50px;height: 50px;" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2">
                             <template #error>
                                 <div class="image-slot">
@@ -348,7 +351,7 @@ const mySort = async (column) => {
                     <el-input v-model="goodModel.goodPrice" placeholder="请输入商品价格"></el-input>
                 </el-form-item>
                 <el-form-item label="商品数量">
-                    <el-input v-model="goodModel.goodNum" placeholder="请输入商品价格"></el-input>
+                    <el-input v-model="goodModel.goodNum" placeholder="请输入商品数量"></el-input>
                 </el-form-item>
                 <el-form-item label="商品图片">
                     <el-upload class="avatar-uploader" :auto-upload="true" :show-file-list="false" action="/api/upload"

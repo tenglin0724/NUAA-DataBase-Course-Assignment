@@ -10,10 +10,8 @@ const tokenStore = useTokenStore()
 
 //创建路由
 const router = useRouter()
-
 //控制注册与登录表单的显示， 默认显示注册
 const isRegister = ref(false)
-
 
 //注册账号的数据结构
 const registerData = ref({
@@ -33,7 +31,6 @@ const checkRePassword = (rule, value, callback) => {
     callback()
   }
 }
-
 
 //校验表单规则
 const rules = {
@@ -56,7 +53,6 @@ const rules = {
   ],
 }
 
-
 //调用后台接口完成注册
 import { userRegisterService, userLoginService } from '@/api/user';
 const register = async () => {
@@ -66,7 +62,7 @@ const register = async () => {
 }
 
 //调用后台接口完成登录
-const login = async () => {
+const loginUser = async () => {
   let result = await userLoginService(registerData.value)
   tokenStore.setToken(result.data)
   ElMessage({ type: 'success', message: result.message ? result.message : "登录成功" })
@@ -161,7 +157,7 @@ const loginManage = async () => {
         </el-form-item>
         <!-- 登录按钮 -->
         <el-form-item>
-          <el-button class="button" type="primary" auto-insert-space @click="login">登录</el-button>
+          <el-button class="button" type="primary" auto-insert-space @click="loginUser()">登录</el-button>
         </el-form-item>
         <el-form-item class="flex">
           <el-link type="info" :underline="false" @click="isRegister = true; clearRegisterData()">

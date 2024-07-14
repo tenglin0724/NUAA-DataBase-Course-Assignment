@@ -6,10 +6,18 @@ import {
   Memo,
   Money,
   Iphone,
-  Coin
+  Coin,
+  Present,
+  MapLocation,
+  Reading
 } from '@element-plus/icons-vue'
-
+import { Plus } from '@element-plus/icons-vue'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { useTokenStore } from '@/stores/token';
+const tokenStore = useTokenStore()
+import { buyManageListService, buyManageDeleteService, buyManageAddService, buyManageUpdateService, buyManageDetailUserService, buyManageDetailGoodService, buyManageDetailDeliveryService } from '@/api/buy.js';
 import { ref } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus';
 //管理员搜索的数据模型
 const searchModel = ref({
   buyUserPhone: '',
@@ -27,7 +35,9 @@ const searchModel = ref({
   priceInterval: {
     min: '',
     max: ''
-  }
+  },
+  prop: '',
+  order: ''
 })
 //清空事件
 const clearSearch = () => {
@@ -55,7 +65,7 @@ const buys = ref([])
 //分页条数据模型
 const pageNum = ref(1)//当前页
 const total = ref(20)//总条数
-const pageSize = ref(3)//每页条数
+const pageSize = ref(5)//每页条数
 
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
@@ -69,12 +79,12 @@ const onCurrentChange = (num) => {
 }
 
 //购买记录获取
-import { buyManageListService, buyManageDeleteService, buyManageAddService, buyManageUpdateService } from '@/api/buy.js';
+
 const buysList = async () => {
   let params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
-    userPhone: searchModel.value.userPhone ? searchModel.value.userPhone : null,
+    userPhone: searchModel.value.buyUserPhone ? searchModel.value.buyUserPhone : null,
     goodIndex: searchModel.value.buyGoodIndex ? searchModel.value.buyGoodIndex : null,
     deliveryIndex: searchModel.value.buyDeliveryIndex ? searchModel.value.buyDeliveryIndex : null,
     state: searchModel.value.buyState ? searchModel.value.buyState : null,
@@ -84,9 +94,10 @@ const buysList = async () => {
     numMax: searchModel.value.numInterval.max ? searchModel.value.numInterval.max : null,
     priceMin: searchModel.value.priceInterval.min ? searchModel.value.priceInterval.min : null,
     priceMax: searchModel.value.priceInterval.max ? searchModel.value.priceInterval.max : null,
+    order: searchModel.value.order ? searchModel.value.order : null,
+    prop: searchModel.value.prop ? searchModel.value.prop : null,
   }
   let result = await buyManageListService(params);
-
   //渲染视图
   total.value = result.data.total;
   buys.value = result.data.items;
@@ -95,12 +106,10 @@ const buysList = async () => {
 const fixTable = (value) => {
   return Number(value).toFixed(2);
 }
-
 buysList();
 
 
 //删除记录
-import { ElMessage, ElMessageBox } from 'element-plus';
 const buyDelete = (row) => {
   ElMessageBox.confirm(
     '你确认要删除该条购买记录嘛？',
@@ -131,10 +140,7 @@ const buyDelete = (row) => {
 }
 
 //新增数据
-import { Plus } from '@element-plus/icons-vue'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import { useTokenStore } from '@/stores/token';
-const tokenStore = useTokenStore()
+
 //控制抽屉是否显示
 const visibleDrawer = ref(false)
 //添加表单数据模型
@@ -199,6 +205,44 @@ const options = [
 ]
 
 
+//表格排序
+const mySort = (column) => {
+  //经测试，只能在后端排序，因为是在后端进行分页的
+  searchModel.value.prop = column.prop
+  searchModel.value.order = column.order
+  //指定页面为第一页
+  pageNum.value = 1
+  //刷新页面
+  buysList()
+}
+
+//设置抽屉页面
+const visible = ref(false)
+//定义要显示的信息
+const buyInfo = ref({
+  buyIndex: '',
+})
+const goodInfo = ref([])
+const userInfo = ref([])
+const deliveryInfo = ref([])
+
+//定义显示函数
+
+const showInfo = async (row) => {
+  visible.value = true
+  buyInfo.value.buyIndex = row.buyIndex
+  //获取用户详细信息
+  let result1 = await buyManageDetailUserService(row.buyIndex);
+  let result2 = await buyManageDetailGoodService(row.buyIndex);
+  let result3 = await buyManageDetailDeliveryService(row.buyIndex);
+  // 渲染视图
+  goodInfo.value = result2.data
+  deliveryInfo.value = result3.data
+  userInfo.value = result1.data
+  console.log(userInfo.value);
+}
+
+
 
 </script>
 <template>
@@ -217,32 +261,32 @@ const options = [
       <el-row>
         <el-col :span="12">
           <el-form-item label="购买者">
-            <el-input placeholder="请输入购买者电话" v-model="searchModel.buyUserPhone"
+            <el-input :prefix-icon="Iphone" placeholder="请输入购买者电话" v-model="searchModel.buyUserPhone"
               style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="购买商品">
-            <el-input placeholder="请输入购买商品" v-model="searchModel.buyGoodIndex"
+            <el-input :prefix-icon="Present" placeholder="请输入购买商品id" v-model="searchModel.buyGoodIndex"
               style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="商品价格" v-model="searchModel.priceInterval">
-            <el-input placeholder="商品最低价格" v-model="searchModel.priceInterval.min"
-              style="position: relative;left: 6px; width: 120px;"></el-input>
-            <el-input placeholder="商品最高价格" v-model="searchModel.priceInterval.max"
-              style="position: relative;left: 60px; width: 120px;"></el-input>
+          <el-form-item label="购买价格" v-model="searchModel.priceInterval">
+            <el-input :prefix-icon="Money" placeholder="购买最低价格" v-model="searchModel.priceInterval.min"
+              style="position: relative;left: 6px; width: 150px;"></el-input>
+            <el-input :prefix-icon="Money" placeholder="购买最高价格" v-model="searchModel.priceInterval.max"
+              style="position: relative;left: 20px; width: 150px;"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="商品数量">
-            <el-input placeholder="商品最少数量" v-model="searchModel.numInterval.min"
-              style="position: relative;left: 20px; width: 120px;"></el-input>
-            <el-input placeholder="商品最多数量" v-model="searchModel.numInterval.max"
-              style="position: relative;left: 60px; width: 120px;"></el-input>
+          <el-form-item label="购买数量">
+            <el-input :prefix-icon="Coin" placeholder="购买最少数量" v-model="searchModel.numInterval.min"
+              style="position: relative;left: 20px; width: 150px;"></el-input>
+            <el-input :prefix-icon="Coin" placeholder="购买最多数量" v-model="searchModel.numInterval.max"
+              style="position: relative;left: 35px; width: 150px;"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -257,7 +301,7 @@ const options = [
         </el-col>
         <el-col :span="12">
           <el-form-item label="派送地址">
-            <el-input placeholder="请输入派送地址" v-model="searchModel.buyDeliveryIndex"
+            <el-input :prefix-icon="MapLocation" placeholder="请输入派送地址id" v-model="searchModel.buyDeliveryIndex"
               style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
@@ -277,21 +321,22 @@ const options = [
     <el-divider />
 
     <!-- 商品列表 -->
-    <el-table :data="buys" border style="width: 100%">
-      <el-table-column label="id" prop="buyIndex" width="50"></el-table-column>
+    <el-table :data="buys" border style="width: 100%" @sort-change="mySort">
+      <el-table-column label="id" prop="buyIndex" width="100" sortable="custom"></el-table-column>
       <el-table-column label="购买者" prop="buyUserPhone" width="120"></el-table-column>
-      <el-table-column label="购买商品" prop="buyGoodIndex" width="90"></el-table-column>
+      <el-table-column label="购买商品" prop="buyGoodIndex" width="120" sortable="custom"></el-table-column>
       <el-table-column label="购买地址" prop="buyDeliveryIndex" width="90"> </el-table-column>
-      <el-table-column label="购买时间" prop="buyCreateTime"></el-table-column>
-      <el-table-column label="更新时间" prop="buyUpdateTime"> </el-table-column>
-      <el-table-column label="购买数量" prop="buyNum" width="90"></el-table-column>
-      <el-table-column label="购买价格" prop="buyPrice" width="90"></el-table-column>
+      <el-table-column label="购买时间" prop="buyCreateTime" sortable="custom"></el-table-column>
+      <el-table-column label="更新时间" prop="buyUpdateTime" sortable="custom"> </el-table-column>
+      <el-table-column label="购买数量" prop="buyNum" width="120" sortable="custom"></el-table-column>
+      <el-table-column label="购买价格" prop="buyPrice" width="120" sortable="custom"></el-table-column>
       <el-table-column label="购买状态" prop="buyState" width="90"></el-table-column>
-      <el-table-column label="操作" width="120">
+      <el-table-column label="操作" width="150">
         <template #default="{ row }">
           <el-button :icon="Edit" circle plain type="primary"
             @click="dialogVisible = true; updateState.id = row.buyIndex; updateState.state = row.buyState"></el-button>
           <el-button :icon="Delete" circle plain type="danger" @click="buyDelete(row)"></el-button>
+          <el-button :icon="Reading" circle plain type="success" @click="showInfo(row)"></el-button>
         </template>
       </el-table-column>
       <template #empty>
@@ -340,6 +385,56 @@ const options = [
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 查看购买记录详情 -->
+    <el-drawer v-model="visible" title="查看详细记录" direction="ttb" size="70%">
+      <el-container>
+        <el-header style="display: flex; justify-content: center; align-items: center;">
+          <h1 style="font-weight: bold;font-size: 20px;">购买记录id:{{ buyInfo.buyIndex }}的详细信息</h1>
+        </el-header>
+        <el-main>
+
+          <el-row :gutter="10">
+            <el-table :data="userInfo" border style="width: 100%">
+              <el-table-column label="用户号码" prop="phone"> </el-table-column>
+              <el-table-column label="用户姓名" prop="username"> </el-table-column>
+              <el-table-column label="性别" prop="sex"></el-table-column>
+              <el-table-column label="生日" prop="birthday"> </el-table-column>
+              <el-table-column label="用户住址" prop="userAddress"></el-table-column>
+              <template #empty>
+                <el-empty description="没有数据" />
+              </template>
+            </el-table>
+          </el-row>
+
+          <el-row :gutter="10">
+            <el-table :data="goodInfo" border style="width: 100%">
+              <el-table-column label="商品id" prop="goodIndex">
+                <template #default="scope">
+                  {{ scope.row.goodIndex }}
+                </template>
+              </el-table-column>
+              <el-table-column label="商品描述" prop="goodDescribe" show-overflow-tooltip>
+
+              </el-table-column>
+
+              <el-table-column label="商品库存" prop="goodNum"></el-table-column>
+              <el-table-column label="商品单价" prop="goodPrice"> </el-table-column>
+              <el-table-column label="商品发布者" prop="goodOwner"></el-table-column>
+            </el-table>
+          </el-row>
+          <el-row :gutter="10">
+            <el-table :data="deliveryInfo" border style="width: 100%">
+              <el-table-column label="派送地址id" prop="deliveryIndex"></el-table-column>
+              <el-table-column label="收货人" prop="deliveryName"> </el-table-column>
+              <el-table-column label="收货号码" prop="deliveryPhone"></el-table-column>
+              <el-table-column label="收货区" prop="deliveryArea"> </el-table-column>
+              <el-table-column label="收货详细地址" prop="deliveryFullAddress"></el-table-column>
+            </el-table>
+          </el-row>
+        </el-main>
+      </el-container>
+    </el-drawer>
 
   </el-card>
 </template>

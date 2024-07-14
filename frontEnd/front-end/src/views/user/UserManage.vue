@@ -3,8 +3,24 @@ import { ref } from 'vue'
 import { userManageListService, userManageDeleteService, userRegisterService } from '@/api/user';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
+  // 编辑
   Edit,
-  Delete
+  // 删除
+  Delete,
+  // 图片
+  Picture,
+  // 备忘录
+  Memo,
+  // 钱
+  Money,
+  // 苹果手机
+  Iphone,
+  // 硬币
+  Coin,
+  // 修改画笔
+  EditPen,
+  // 地图定位
+  MapLocation
 } from '@element-plus/icons-vue'
 
 
@@ -21,7 +37,9 @@ const searchModel = ref({
   createTime: {
     min: '',
     max: ''
-  }
+  },
+  prop: '',
+  order: ''
 })
 
 //定义清空搜索表单的单击事件
@@ -43,7 +61,7 @@ const userList = ref([])
 //分页条数据模型
 const pageNum = ref(1)//当前页
 const total = ref(20)//总条数
-const pageSize = ref(3)//每页条数
+const pageSize = ref(5)//每页条数
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
   pageSize.value = size
@@ -68,9 +86,15 @@ const usersList = async () => {
     brithMax: searchModel.value.brithdate.max ? searchModel.value.brithdate.max : null,
     createMin: searchModel.value.createTime.min ? searchModel.value.createTime.min : null,
     createMax: searchModel.value.createTime.max ? searchModel.value.createTime.max : null,
+    order: searchModel.value.order ? searchModel.value.order : null,
+    prop: searchModel.value.prop ? searchModel.value.prop : null,
   }
   let result = await userManageListService(params);
   //渲染视图
+  result.data.items.forEach((item) => {
+    item.userPic = '/src/pic/' + item.userPic
+  })
+
   total.value = result.data.total;
   userList.value = result.data.items;
 }
@@ -144,6 +168,17 @@ const userManageAdd = async () => {
   }
 }
 
+//表格排序
+const mySort = (column) => {
+  //经测试，只能在后端排序，因为是在后端进行分页的
+  searchModel.value.prop = column.prop
+  searchModel.value.order = column.order
+  //指定页面为第一页
+  pageNum.value = 1
+  //刷新页面
+  usersList()
+}
+
 </script>
 
 <template>
@@ -162,14 +197,14 @@ const userManageAdd = async () => {
       <el-row>
         <el-col :span="12">
           <el-form-item label="手机号码">
-            <el-input placeholder="请输入手机号码" v-model="searchModel.phone"
-              style="position: relative;left: 20px; width: 300px;"></el-input>
+            <el-input :prefix-icon="Iphone" placeholder="请输入手机号码" v-model="searchModel.phone"
+              style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="用户姓名">
-            <el-input placeholder="请输入姓名" v-model="searchModel.userName"
-              style="position: relative;left: 20px; width: 300px;"></el-input>
+            <el-input :prefix-icon="EditPen" placeholder="请输入姓名" v-model="searchModel.userName"
+              style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -184,8 +219,8 @@ const userManageAdd = async () => {
         </el-col>
         <el-col :span="12">
           <el-form-item label="常驻地址">
-            <el-input placeholder="请输入地址" v-model="searchModel.address"
-              style="position: relative;left: 20px; width: 300px;"></el-input>
+            <el-input :prefix-icon="MapLocation" placeholder="请输入地址" v-model="searchModel.address"
+              style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
 
 
@@ -222,14 +257,30 @@ const userManageAdd = async () => {
 
     <el-divider />
     <!-- 表单数据 -->
-    <el-table :data="userList" border style="width: 100%">
+    <el-table :data="userList" border style="width: 100%" @sort-change="mySort">
       <el-table-column label="用户号码" prop="phone" width="150"></el-table-column>
       <el-table-column label="用户姓名" prop="username" width="100"></el-table-column>
       <el-table-column label="用户性别" prop="sex" width="90"> </el-table-column>
-      <el-table-column label="用户生日" prop="brithday"></el-table-column>
+      <el-table-column label="用户头像" prop="userPic" width="100">
+        <template #default="scope">
+          <div style="display: flex; align-items: center">
+            <el-image :preview-src-list="scope.row.userPic" :src=scope.row.userPic style="width: 80px;height: 45px;"
+              :zoom-rate="1.2" :max-scale="7" :min-scale="0.2">
+              <template #error>
+                <div class="image-slot">
+                  <el-icon>
+                    <Picture />
+                  </el-icon>
+                </div>
+              </template>
+            </el-image>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户生日" prop="birthday" sortable="custom"></el-table-column>
       <el-table-column label="用户地址" prop="userAddress"> </el-table-column>
-      <el-table-column label="创建时间" prop="userCreateTime"></el-table-column>
-      <el-table-column label="更新时间" prop="userUpdateTime"></el-table-column>
+      <el-table-column label="创建时间" prop="userCreateTime" sortable="custom"></el-table-column>
+      <el-table-column label="更新时间" prop="userUpdateTime" sortable="custom"></el-table-column>
       <el-table-column label="操作" width="120">
         <template #default="{ row }">
           <el-button :icon="Delete" circle plain type="danger" @click="userDelete(row)"></el-button>

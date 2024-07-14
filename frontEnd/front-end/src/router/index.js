@@ -33,7 +33,7 @@ const routes = [
     path: "/",
     component: Layout,
     //配置重定向的路由
-    redirect: "/login",
+    redirect: "/good/show",
     //配置子路由
     children: [
       { path: "/good/show", component: GoodShow },

@@ -15,3 +15,8 @@ export const deliveryManageDeleteService = (id) => {
 export const deliveryManageAddService = (params) => {
   return request.post("/delivery", params);
 };
+
+//更新购买记录状态
+export const deliveryManageUpdateService = (params) => {
+  return request.put("/delivery", params);
+};

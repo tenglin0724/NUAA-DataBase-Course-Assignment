@@ -1,11 +1,19 @@
 <script setup>
 import { ref } from 'vue'
-import { deliveryManageListService, deliveryManageDeleteService, deliveryManageAddService } from '@/api/delivery.js';
+import { deliveryManageListService, deliveryManageDeleteService, deliveryManageAddService, deliveryManageUpdateService } from '@/api/delivery.js';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   Edit,
-  Delete
+  Delete,
+  Picture,
+  Memo,
+  Money,
+  Iphone,
+  Coin,
+  User,
+  MapLocation
 } from '@element-plus/icons-vue'
+
 
 //定义数据搜索表单
 const searchModel = ref({
@@ -16,7 +24,9 @@ const searchModel = ref({
   createTime: {
     min: '',
     max: ''
-  }
+  },
+  prop: '',
+  order: ''
 })
 //定义清空搜索表单的单击事件
 const clearSearch = () => {
@@ -41,7 +51,7 @@ const deliveryList = ref([])
 //分页条数据模型
 const pageNum = ref(1) //当前页
 const total = ref(20) //总条数
-const pageSize = ref(3) //每页条数
+const pageSize = ref(5) //每页条数
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
   pageSize.value = size
@@ -64,6 +74,8 @@ const deliverysList = async () => {
     deliveryPhone: searchModel.value.deliveryPhone ? searchModel.value.deliveryPhone : null,
     createMin: searchModel.value.createTime.min ? searchModel.value.createTime.min : null,
     createMax: searchModel.value.createTime.max ? searchModel.value.createTime.max : null,
+    order: searchModel.value.order ? searchModel.value.order : null,
+    prop: searchModel.value.prop ? searchModel.value.prop : null,
   }
   let result = await deliveryManageListService(params);
 
@@ -108,20 +120,57 @@ const deliveryDelete = (row) => {
 const dialogVisible = ref(false)
 //定义新增表单数据
 const deliveryAdd = ref({
+  deliveryIndex: '',
   deliveryName: '',
   deliveryPhone: '',
   deliveryArea: '',
   deliveryFullAddress: '',
 })
+
+
+//表格排序
+const mySort = (column) => {
+  //经测试，只能在后端排序，因为是在后端进行分页的
+  searchModel.value.prop = column.prop
+  searchModel.value.order = column.order
+  //指定页面为第一页
+  pageNum.value = 1
+  //刷新页面
+  deliverysList()
+}
+
+//定义标题
+const myTitle = ref('')
+
+//定义修改
+const showInfo = (row) => {
+  dialogVisible.value = true;
+  myTitle.value = '修改收货地址';
+
+  deliveryAdd.value.deliveryIndex = row.deliveryIndex;
+  deliveryAdd.value.deliveryName = row.deliveryName;
+  deliveryAdd.value.deliveryPhone = row.deliveryPhone;
+  deliveryAdd.value.deliveryArea = row.deliveryArea;
+  deliveryAdd.value.deliveryFullAddress = row.deliveryFullAddress;
+  console.log(row);
+}
+
 //定义新增事件
 const deliveryManageAdd = async () => {
-  //调用接口，提交数据
-  let result = await deliveryManageAddService(deliveryAdd.value);
-  //判断是否成功
-  ElMessage.success(result.message ? result.message : "添加成功");
-  //更改抽屉显示
+  if (myTitle.value === '修改收货地址') {
+    let result = await deliveryManageUpdateService(deliveryAdd.value);
+    //判断是否成功
+    ElMessage.success(result.message ? result.message : "修改成功");
+  } else {
+    //调用接口，提交数据
+    let result = await deliveryManageAddService(deliveryAdd.value);
+    //判断是否成功
+    ElMessage.success(result.message ? result.message : "添加成功");
+  }
+  //更改显示
   dialogVisible.value = false;
   //清空新建表单内容
+  deliveryAdd.value.deliveryIndex = ''
   deliveryAdd.value.deliveryName = ''
   deliveryAdd.value.deliveryPhone = ''
   deliveryAdd.value.deliveryArea = ''
@@ -130,9 +179,8 @@ const deliveryManageAdd = async () => {
   deliverysList()
 }
 
+
 </script>
-
-
 
 <template>
   <el-card class="page-container">
@@ -141,7 +189,7 @@ const deliveryManageAdd = async () => {
       <div class="header">
         <span>地址管理</span>
         <div class="extra">
-          <el-button type="primary" @click="dialogVisible = true;">添加地址</el-button>
+          <el-button type="primary" @click="dialogVisible = true; myTitle = '添加收货地址'">添加地址</el-button>
         </div>
       </div>
     </template>
@@ -150,15 +198,15 @@ const deliveryManageAdd = async () => {
       <el-row>
         <el-col :span="12">
           <el-form-item label="收货人电话">
-            <el-input placeholder="请输入收货人电话" v-model="searchModel.deliveryPhone"
+            <el-input :prefix-icon="Iphone" placeholder="请输入收货人电话" v-model="searchModel.deliveryPhone"
               style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
 
         </el-col>
         <el-col :span="12">
           <el-form-item label="收货人姓名">
-            <el-input placeholder="请输入姓名" v-model="searchModel.deliveryName"
-              style="position: relative;left: 20px; width: 300px;"></el-input>
+            <el-input :prefix-icon="User" placeholder="请输入姓名" v-model="searchModel.deliveryName"
+              style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -173,15 +221,15 @@ const deliveryManageAdd = async () => {
         </el-col>
         <el-col :span="12">
           <el-form-item label="地址关键词">
-            <el-input placeholder="请输入关键词" v-model="searchModel.addressKey"
-              style="position: relative;left: 20px; width: 300px;"></el-input>
+            <el-input :prefix-icon="MapLocation" placeholder="请输入关键词" v-model="searchModel.addressKey"
+              style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item label="地址所有者">
-            <el-input placeholder="请输入手机号码" v-model="searchModel.phone"
+            <el-input :prefix-icon="Iphone" placeholder="请输入手机号码" v-model="searchModel.phone"
               style="position: relative;left: 20px; width: 200px;"></el-input>
           </el-form-item>
         </el-col>
@@ -196,19 +244,18 @@ const deliveryManageAdd = async () => {
 
     <el-divider />
 
-    <el-table :data="deliveryList" border style="width: 100%">
-      <el-table-column label="id" prop="deliveryIndex" width="50"></el-table-column>
+    <el-table :data="deliveryList" border style="width: 100%" @sort-change="mySort">
+      <el-table-column label="id" prop="deliveryIndex" width="70" sortable="custom"></el-table-column>
       <el-table-column label="收货人姓名" prop="deliveryName" width="120"></el-table-column>
       <el-table-column label="收货人电话" prop="deliveryPhone" width="120"> </el-table-column>
       <el-table-column label="所有者" prop="deliveryOwner" width="120"></el-table-column>
       <el-table-column label="收货区" prop="deliveryArea"></el-table-column>
       <el-table-column label="收货详细地址" prop="deliveryFullAddress"> </el-table-column>
-      <el-table-column label="创建时间" prop="deliveryCreateTime"></el-table-column>
+      <el-table-column label="创建时间" prop="deliveryCreateTime" sortable="custom"></el-table-column>
 
       <el-table-column label="操作" width="120">
         <template #default="{ row }">
-          <el-button :icon="Edit" circle plain type="primary"
-            @click="dialogVisible = true; updateState.id = row.buyIndex; updateState.state = row.buyState"></el-button>
+          <el-button :icon="Edit" circle plain type="primary" @click="showInfo(row)"></el-button>
           <el-button :icon="Delete" circle plain type="danger" @click="deliveryDelete(row)"></el-button>
         </template>
       </el-table-column>
@@ -220,29 +267,29 @@ const deliveryManageAdd = async () => {
       layout="jumper, total, sizes, prev, pager, next" background :total="total" @size-change="onSizeChange"
       @current-change="onCurrentChange" style="margin-top: 20px; justify-content: flex-end" />
 
-    <el-dialog v-model="dialogVisible" title="创建新的地址" width="500" :before-close="handleClose">
+    <el-dialog v-model="dialogVisible" :title=myTitle width="500" :before-close="handleClose">
       <el-form ref=" form" size="large" autocomplete="off" :model="deliveryAdd">
         <el-form-item label="收货人姓名">
           <el-input placeholder="请输入收货人姓名" v-model="deliveryAdd.deliveryName"
             style="position: relative;left: 30px; width: 300px;"></el-input>
         </el-form-item>
         <el-form-item label="收货人号码">
-          <el-input placeholder="请输入收货人号码" v-model="deliveryAdd.deliveryArea"
+          <el-input placeholder="请输入收货人号码" v-model="deliveryAdd.deliveryPhone"
             style="position: relative;left: 30px; width: 300px;"></el-input>
         </el-form-item>
         <el-form-item label="收货人所在区">
-          <el-input placeholder="请输入用户密码" v-model="deliveryAdd.deliveryArea"
+          <el-input placeholder="请输入收货人所在区" v-model="deliveryAdd.deliveryArea"
             style="position: relative;left: 17px; width: 300px;"></el-input>
         </el-form-item>
         <el-form-item label="收货人详细地址">
-          <el-input placeholder="请输入用户密码" v-model="deliveryAdd.deliveryFullAddress"
+          <el-input placeholder="请输入收货人详细地址" v-model="deliveryAdd.deliveryFullAddress"
             style="position: relative;left: 4px; width: 300px;"></el-input>
         </el-form-item>
         <el-form-item>
           <div class="dialog-footer">
             <el-button @click="dialogVisible = false;" style="margin-right: 150px;margin-left: 80px;">取消</el-button>
             <el-button type="primary" @click="deliveryManageAdd()">
-              添加
+              发布
             </el-button>
           </div>
         </el-form-item>

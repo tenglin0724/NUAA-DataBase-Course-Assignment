@@ -55,7 +55,6 @@ import avatar from '@/assets/default.png'
       </el-header>
       <!-- 中间区域 -->
       <el-main>
-        <!-- <div style="width: 1240px; height: 530px;border: 1px solid red;"> -->
         <!-- 声明子路由 -->
         <router-view></router-view>
         <!-- </div> -->
