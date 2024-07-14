@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/delivery")
@@ -19,6 +18,7 @@ public class DeliveryController {
     //创建一个派送地址
     @PostMapping
     public Result add(@RequestBody @Validated(Delivery.Add.class) Delivery delivery){
+        System.out.println(delivery);
         deliveryService.add(delivery);
         return Result.success();
     }
@@ -41,9 +41,13 @@ public class DeliveryController {
             //用于指定日期最小值
             @RequestParam(required = false) Object createMin,
             //用于指定日期最大值
-            @RequestParam(required = false) Object createMax
+            @RequestParam(required = false) Object createMax,
+            //用于指定排序的列
+            @RequestParam(required = false) String prop,
+            //用于指定排序的方式
+            @RequestParam(required = false) String order
     ){
-        PageBean<Delivery> pageBean = deliveryService.list(pageNum,pageSize,isMy,phone,deliveryName,deliveryPhone,addressKey,createMin,createMax);
+        PageBean<Delivery> pageBean = deliveryService.list(pageNum,pageSize,isMy,phone,deliveryName,deliveryPhone,addressKey,createMin,createMax,prop,order);
         return Result.success(pageBean);
     }
 
@@ -67,7 +71,4 @@ public class DeliveryController {
         deliveryService.delete(id);
         return Result.success();
     }
-
-
-
 }

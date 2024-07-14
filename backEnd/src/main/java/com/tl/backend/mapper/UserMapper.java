@@ -25,7 +25,16 @@ public interface UserMapper {
     void updatePwd(@Param("new_pwd") String new_pwd,@Param("phone") String phone);
 
     //使用配置文件实现查询
-    List<User> list(@Param("phone")String phone,@Param("userName") String userName,@Param("sex") String sex,@Param("address") String address,@Param("brithMin") Object brithMin,@Param("brithMax") Object brithMax,@Param("createMin") Object createMin,@Param("createMax") Object createMax);
+    List<User> list(@Param("phone")String phone,
+                    @Param("userName") String userName,
+                    @Param("sex") String sex,
+                    @Param("address") String address,
+                    @Param("birthMin") Object birthMin,
+                    @Param("birthMax") Object birthMax,
+                    @Param("createMin") Object createMin,
+                    @Param("createMax") Object createMax,
+                    @Param("prop") String prop,
+                    @Param("order")String order);
 
     @Delete("delete from my_user where phone=#{phone}")
     void delete(String phone);

@@ -1,14 +1,13 @@
 package com.tl.backend.controller;
 
-import com.tl.backend.pojo.Buy;
-import com.tl.backend.pojo.Good;
-import com.tl.backend.pojo.PageBean;
-import com.tl.backend.pojo.Result;
+import com.tl.backend.pojo.*;
 import com.tl.backend.service.BuyService;
 import com.tl.backend.service.GoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/buy")
@@ -65,9 +64,13 @@ public class BuyController {
             //用于指定价格最小值
             @RequestParam(required = false) Object numMin,
             //用于指定价格最大值
-            @RequestParam(required = false) Object numMax
+            @RequestParam(required = false) Object numMax,
+            //用于指定排序的列
+            @RequestParam(required = false) String prop,
+            //用于指定排序的方式
+            @RequestParam(required = false) String order
     ){
-        PageBean<Buy> pageBean = buyService.list(pageNum,pageSize,isMy,userPhone,goodIndex,deliveryIndex,state,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
+        PageBean<Buy> pageBean = buyService.list(pageNum,pageSize,isMy,userPhone,goodIndex,deliveryIndex,state,priceMin,priceMax,dateMin,dateMax,numMin,numMax,prop,order);
         return Result.success(pageBean);
     }
 
@@ -96,6 +99,27 @@ public class BuyController {
     public Result updateState(@RequestParam Integer id,@RequestParam String state){
         buyService.updateState(id,state);
         return Result.success();
+    }
+
+    //获取详细的用户信息
+    @GetMapping("/user")
+    public Result<List<User>> detailUser(@RequestParam Integer id){
+        List<User> users= buyService.detailUser(id);
+        return Result.success(users);
+    }
+
+    //获取详细的地址信息
+    @GetMapping("/delivery")
+    public Result<List<Delivery>> detailDelivery(@RequestParam Integer id){
+        List<Delivery> deliverys= buyService.detailDelivery(id);
+        return Result.success(deliverys);
+    }
+
+    //获取详细的商品信息
+    @GetMapping("/good")
+    public Result<List<Good>> detailGood(@RequestParam Integer id){
+        List<Good> goods= buyService.detailGood(id);
+        return Result.success(goods);
     }
 
 }

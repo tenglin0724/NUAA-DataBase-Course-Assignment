@@ -7,10 +7,12 @@ import com.tl.backend.pojo.Buy;
 import com.tl.backend.pojo.PageBean;
 import com.tl.backend.pojo.User;
 import com.tl.backend.service.UserService;
+import com.tl.backend.util.CamelToUnderlineUtil;
 import com.tl.backend.util.Md5Util;
 import com.tl.backend.util.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -18,20 +20,26 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
 
     @Override
-    public PageBean<User> list(Integer pageNum, Integer pageSize, String phone, String userName, String sex, String address, Object brithMin, Object brithMax, Object createMin, Object createMax) {
+    public PageBean<User> list(Integer pageNum, Integer pageSize, String phone, String userName, String sex, String address, Object brithMin, Object brithMax, Object createMin, Object createMax,String prop,String order) {
+        //判断prop是否为空
+        if(prop!=null){
+            prop= CamelToUnderlineUtil.camel2under(prop);
+        }
+
         //1. 创建PageBean对象
         PageBean<User> pb = new PageBean<>();
         //2. 开启分页查询
         PageHelper.startPage(pageNum,pageSize);
         //3. 调用Mapper
 
-        List<User> users = userMapper.list(phone, userName, sex, address, brithMin, brithMax,createMin,createMax);
+        List<User> users = userMapper.list(phone, userName, sex, address, brithMin, brithMax,createMin,createMax,prop,order);
         //page中提供了方法，可以获取PageHelper分页查询获得的总记录条数和对应的数据
         Page<User> p =(Page<User>)users;
 

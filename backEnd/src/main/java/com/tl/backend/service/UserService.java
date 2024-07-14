@@ -6,7 +6,7 @@ import com.tl.backend.pojo.User;
 public interface UserService {
 
     //创建列表查询
-    PageBean<User> list(Integer pageNum, Integer pageSize, String phone, String userName,String sex, String address, Object brithMin, Object brithMax, Object createMin, Object createMax);
+    PageBean<User> list(Integer pageNum, Integer pageSize, String phone, String userName,String sex, String address, Object brithMin, Object brithMax, Object createMin, Object createMax,String prop,String order);
 
     User findByPhone(String phone);
 

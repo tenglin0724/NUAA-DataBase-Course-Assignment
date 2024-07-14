@@ -9,9 +9,6 @@ public interface DeliveryService {
     //添加
     void add(Delivery delivery);
 
-
-//    PageBean<Delivery> list(Integer pageNum,Integer pageSize);
-
     //获取详细信息
     Delivery detail(Integer id);
 
@@ -22,5 +19,5 @@ public interface DeliveryService {
     void delete(Integer id);
 
     //获取所有列表
-    PageBean<Delivery> list(Integer pageNum, Integer pageSize, boolean isMy, String phone, String deliveryName, String deliveryPhone, String addressKey, Object createMin, Object createMax);
+    PageBean<Delivery> list(Integer pageNum, Integer pageSize, boolean isMy, String phone, String deliveryName, String deliveryPhone, String addressKey, Object createMin, Object createMax,String prop,String order);
 }

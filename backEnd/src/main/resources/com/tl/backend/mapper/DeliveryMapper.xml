@@ -5,7 +5,7 @@
 <mapper namespace="com.tl.backend.mapper.DeliveryMapper">
     <!--动态sql-->
     <select id="list" resultType="com.tl.backend.pojo.Delivery">
-        select * from delivery
+        select delivery_index,delivery_name,delivery_area,delivery_full_address,delivery_phone,delivery_create_time,delivery_owner from delivery
         <where>
             <if test="isMy!=null and isMy==true">
                 delivery_owner=#{myPhone}
@@ -30,7 +30,18 @@
                 and delivery_create_time &lt;=#{createMax}
             </if>
         </where>
-
+        --         注意这里只能使用$否则会匹配不出来
+        <choose>
+            <when test="prop != null and order == 'descending'">
+                order by ${prop} desc
+            </when>
+            <when test="prop != null and order == 'ascending'">
+                order by ${prop} asc
+            </when>
+            <otherwise>
+                order by delivery_index
+            </otherwise>
+        </choose>
 
     </select>
 </mapper>

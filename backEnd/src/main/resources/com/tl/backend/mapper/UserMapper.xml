@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tl.backend.mapper.UserMapper">
     <select id="list" resultType="com.tl.backend.pojo.User">
-        select * from my_user
+        select username,user_pic,sex,birthday,user_address,phone,user_create_time,user_update_time from my_user
         <where>
             <if test="phone!=null">
                 phone = #{phone}
@@ -16,13 +16,13 @@
                 and sex=#{sex}
             </if>
             <if test="address!=null">
-                and user_address=#{address}
+                and user_address like concat('%',#{address},'%')
             </if>
-            <if test="brithMin!=null">
-                and brithday &gt;=#{brithMin}
+            <if test="birthMin!=null">
+                and birthday &gt;=#{birthMin}
             </if>
-            <if test="brithMax!=null">
-                and brithday &lt;=#{brithMax}
+            <if test="birthMax!=null">
+                and birthday &lt;=#{birthMax}
             </if>
             <if test="createMin!=null">
                 and user_create_time &gt;=#{createMin}
@@ -31,7 +31,18 @@
                 and user_create_time &lt;=#{createMax}
             </if>
         </where>
-
+        --         注意这里只能使用$否则会匹配不出来
+        <choose>
+            <when test="prop != null and order == 'descending'">
+                order by ${prop} desc
+            </when>
+            <when test="prop != null and order == 'ascending'">
+                order by ${prop} asc
+            </when>
+            <otherwise>
+                order by phone
+            </otherwise>
+        </choose>
 
     </select>
 </mapper>

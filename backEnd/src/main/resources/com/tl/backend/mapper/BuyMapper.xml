@@ -5,13 +5,13 @@
 <mapper namespace="com.tl.backend.mapper.BuyMapper">
     <!--    动态sql-->
     <select id="list" resultType="com.tl.backend.pojo.Buy">
-        select * from buy
+        select buy_index,buy_good_index,buy_user_phone,buy_create_time,buy_update_time,buy_num,buy_price,buy_state,buy_delivery_index from buy
         <where>
             <if test="isMy!=null and isMy==true">
-                buy_user_phone=#{phone}
+                buy_user_phone=#{myPhone}
             </if>
             <if test="isMy==null or isMy==false and userPhone!=null">
-                buy_user_phone=#{phone}
+                buy_user_phone=#{userPhone}
             </if>
             <if test="goodIndex!=null">
                 and buy_good_index=#{goodIndex}
@@ -23,24 +23,57 @@
                 and buy_state=#{state}
             </if>
             <if test="priceMin!=null">
-                and buy_price &gt;=priceMin
+                and buy_price &gt;=#{priceMin}
             </if>
             <if test="priceMax!=null">
-                and buy_price &lt;=priceMax
+                and buy_price &lt;=#{priceMax}
             </if>
             <if test="dateMin!=null">
-                and buy_create_time &gt;=dateMin
+                and buy_create_time &gt;=#{dateMin}
             </if>
             <if test="dateMax!=null">
-                and buy_create_time &lt;=dateMax
+                and buy_create_time &lt;=#{dateMax}
             </if>
             <if test="numMin!=null">
-                and buy_price &gt;=priceMin
+                and buy_num &gt;=#{numMin}
             </if>
             <if test="numMax!=null">
-                and buy_num &lt;=priceMin
+                and buy_num &lt;=#{numMax}
             </if>
         </where>
+        --         注意这里只能使用$否则会匹配不出来
+        <choose>
+            <when test="prop != null and order == 'descending'">
+                order by ${prop} desc
+            </when>
+            <when test="prop != null and order == 'ascending'">
+                order by ${prop} asc
+            </when>
+            <otherwise>
+                order by buy_good_index
+            </otherwise>
+        </choose>
 
+    </select>
+    <select id="detailUser" resultType="com.tl.backend.pojo.User">
+        select username,sex,birthday,user_address,phone
+        from my_user
+        join
+            (select buy_user_phone from buy where buy_index=#{id}) as bu
+        on my_user.phone=bu.buy_user_phone
+    </select>
+    <select id="detailGood" resultType="com.tl.backend.pojo.Good">
+        select good_index,good_describe,good_price,good_num,good_owner
+        from good
+        join
+            (select buy_good_index from buy where buy_index=#{id}) as bu
+        on good.good_index=bu.buy_good_index
+    </select>
+    <select id="detailDelivery" resultType="com.tl.backend.pojo.Delivery">
+        select delivery_index,delivery_name,delivery_area,delivery_full_address,delivery_phone,delivery_owner
+        from delivery
+        join
+            (select buy_delivery_index from buy where buy_index=#{id}) as bu
+        on delivery.delivery_index=bu.buy_delivery_index
     </select>
 </mapper>

@@ -31,7 +31,6 @@ public class UserController {
                            @Pattern(regexp = "^(?=.*[a-zA-Z0-9].*)(?=.*[a-zA-Z.!@#$%^&*].*)(?=.*[0-9.!@#$%^&*].*).{6,32}$", message = "密码至少包含数字，字母和符号的两种") String password){
         //判断是否已经注册
         User u = userService.findByPhone(phone);
-
         if(u==null){
             //没注册过
             //注册
@@ -149,9 +148,13 @@ public class UserController {
             //用于指定创建最早日期
             @RequestParam(required = false) Object createMin,
             //用于指定创建最晚日期
-            @RequestParam(required = false) Object createMax
+            @RequestParam(required = false) Object createMax,
+            //用于指定排序的列
+            @RequestParam(required = false) String prop,
+            //用于指定排序的方式
+            @RequestParam(required = false) String order
     ){
-        PageBean<User> pageBean=userService.list(pageNum,pageSize,phone,userName,sex,address,brithMin,brithMax,createMin,createMax);
+        PageBean<User> pageBean=userService.list(pageNum,pageSize,phone,userName,sex,address,brithMin,brithMax,createMin,createMax,prop,order);
         return Result.success(pageBean);
     }
 

@@ -3,13 +3,13 @@ package com.tl.backend.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.tl.backend.mapper.BuyMapper;
-import com.tl.backend.pojo.Buy;
-import com.tl.backend.pojo.Good;
-import com.tl.backend.pojo.PageBean;
+import com.tl.backend.pojo.*;
 import com.tl.backend.service.BuyService;
+import com.tl.backend.util.CamelToUnderlineUtil;
 import com.tl.backend.util.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class BuyServiceImpl implements BuyService {
 
     @Autowired
@@ -58,7 +59,12 @@ public class BuyServiceImpl implements BuyService {
     }
 
     @Override
-    public PageBean<Buy> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String goodIndex, String deliveryIndex, String state, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax) {
+    public PageBean<Buy> list(Integer pageNum, Integer pageSize, boolean isMy, String userPhone, String goodIndex, String deliveryIndex, String state, Object priceMin, Object priceMax, Object dateMin, Object dateMax, Object numMin, Object numMax,String prop,String order) {
+        //判断prop是否为空
+        if(prop!=null){
+            prop= CamelToUnderlineUtil.camel2under(prop);
+        }
+
         //1. 创建PageBean对象
         PageBean<Buy> pb = new PageBean<>();
         //2. 开启分页查询
@@ -67,7 +73,7 @@ public class BuyServiceImpl implements BuyService {
         Map<String,Object> map = ThreadLocalUtil.get();
         String myPhone =(String) map.get("phone");
 
-        List<Buy> goods = buyMapper.list(myPhone,isMy,userPhone,goodIndex,deliveryIndex,state,priceMin,priceMax,dateMin,dateMax,numMin,numMax);
+        List<Buy> goods = buyMapper.list(myPhone,isMy,userPhone,goodIndex,deliveryIndex,state,priceMin,priceMax,dateMin,dateMax,numMin,numMax,prop,order);
         //page中提供了方法，可以获取PageHelper分页查询获得的总记录条数和对应的数据
         Page<Buy> p =(Page<Buy>)goods;
 
@@ -76,5 +82,23 @@ public class BuyServiceImpl implements BuyService {
         pb.setItems(p.getResult());
 
         return pb;
+    }
+
+    @Override
+    public List<User> detailUser(Integer id) {
+        List<User> users = buyMapper.detailUser(id);
+        return users;
+    }
+
+    @Override
+    public List<Delivery> detailDelivery(Integer id) {
+        List<Delivery> deliverys = buyMapper.detailDelivery(id);
+        return deliverys;
+    }
+
+    @Override
+    public List<Good> detailGood(Integer id) {
+        List<Good> goods = buyMapper.detailGood(id);
+        return goods;
     }
 }

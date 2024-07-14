@@ -1,7 +1,9 @@
 package com.tl.backend.mapper;
 
 import com.tl.backend.pojo.Buy;
+import com.tl.backend.pojo.Delivery;
 import com.tl.backend.pojo.Good;
+import com.tl.backend.pojo.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -22,5 +24,25 @@ public interface BuyMapper {
     void update(@Param("id") Integer id,@Param("state") String state);
 
     //使用xml配置文件
-    List<Buy> list(@Param("myPhone") String myPhone, @Param("isMy") boolean isMy, @Param("userPhone") String userPhone,@Param("goodIndex") String goodIndex, @Param("deliveryIndex") String deliveryIndex,@Param("state") String state,@Param("priceMin") Object priceMin,@Param("priceMax") Object priceMax,@Param("dateMin") Object dateMin,@Param("dateMax") Object dateMax,@Param("numMin") Object numMin,@Param("numMax") Object numMax);
+    List<Buy> list(@Param("myPhone") String myPhone,
+                   @Param("isMy") boolean isMy,
+                   @Param("userPhone") String userPhone,
+                   @Param("goodIndex") String goodIndex,
+                   @Param("deliveryIndex") String deliveryIndex,
+                   @Param("state") String state,
+                   @Param("priceMin") Object priceMin,
+                   @Param("priceMax") Object priceMax,
+                   @Param("dateMin") Object dateMin,
+                   @Param("dateMax") Object dateMax,
+                   @Param("numMin") Object numMin,
+                   @Param("numMax") Object numMax,
+                   @Param("prop") String prop,
+                   @Param("order") String order);
+
+    //使用xml配置文件
+    List<User> detailUser(Integer id);
+    //使用xml配置文件
+    List<Delivery> detailDelivery(Integer id);
+    //使用xml配置文件
+    List<Good> detailGood(Integer id);
 }

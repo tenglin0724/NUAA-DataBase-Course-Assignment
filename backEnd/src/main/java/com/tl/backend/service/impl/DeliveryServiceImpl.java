@@ -7,15 +7,18 @@ import com.tl.backend.pojo.Buy;
 import com.tl.backend.pojo.Delivery;
 import com.tl.backend.pojo.PageBean;
 import com.tl.backend.service.DeliveryService;
+import com.tl.backend.util.CamelToUnderlineUtil;
 import com.tl.backend.util.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class DeliveryServiceImpl implements DeliveryService {
 
     @Autowired
@@ -25,7 +28,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     public void add(Delivery delivery) {
         //补充delivery的信息
         delivery.setDeliveryCreateTime(String.valueOf(LocalDateTime.now()));
-
         Map<String,Object> login = ThreadLocalUtil.get();
         String phone = (String) login.get("phone");
         delivery.setDeliveryOwner(phone);
@@ -53,7 +55,12 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public PageBean<Delivery> list(Integer pageNum, Integer pageSize, boolean isMy, String phone, String deliveryName, String deliveryPhone, String addressKey, Object createMin, Object createMax) {
+    public PageBean<Delivery> list(Integer pageNum, Integer pageSize, boolean isMy, String phone, String deliveryName, String deliveryPhone, String addressKey, Object createMin, Object createMax,String prop,String order) {
+        //判断prop是否为空
+        if(prop!=null){
+            prop= CamelToUnderlineUtil.camel2under(prop);
+        }
+
         //1. 创建PageBean对象
         PageBean<Delivery> pb = new PageBean<>();
         //2. 开启分页查询
@@ -62,7 +69,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Map<String,Object> map = ThreadLocalUtil.get();
         String myPhone =(String) map.get("phone");
 
-        List<Delivery> goods = deliveryMapper.list(myPhone,isMy,phone,deliveryName,deliveryPhone,addressKey,createMin,createMax);
+        List<Delivery> goods = deliveryMapper.list(myPhone,isMy,phone,deliveryName,deliveryPhone,addressKey,createMin,createMax,prop,order);
         //page中提供了方法，可以获取PageHelper分页查询获得的总记录条数和对应的数据
         Page<Delivery> p =(Page<Delivery>)goods;
 

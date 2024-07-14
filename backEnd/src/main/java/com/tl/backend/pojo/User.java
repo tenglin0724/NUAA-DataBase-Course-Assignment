@@ -17,6 +17,7 @@ public class User {
     @NotNull
     private String sex;
     @NotNull
+    @JsonFormat(pattern = "YYYY-MM-dd")
     private Date birthday;
     @NotEmpty
     private String userAddress;

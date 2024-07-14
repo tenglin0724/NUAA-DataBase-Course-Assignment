@@ -5,7 +5,7 @@
 <mapper namespace="com.tl.backend.mapper.GoodMapper">
 <!--    动态sql-->
     <select id="list" resultType="com.tl.backend.pojo.Good">
-        select * from good
+        select good_pic,good_index,good_describe,good_price,good_num,good_create_time,good_update_time,good_owner from good
         <where>
             <if test="isMy!=null and isMy==true">
                 good_owner=#{myPhone}
@@ -17,10 +17,10 @@
                and good_describe like concat('%',#{keyWord},'%')
             </if>
             <if test="dateMin!=null">
-                and good_create_date &gt;=#{dateMin}
+                and good_create_time &gt;=#{dateMin}
             </if>
             <if test="dateMax!=null">
-               and good_create_date &lt;=#{dateMax}
+               and good_create_time &lt;=#{dateMax}
             </if>
             <if test="priceMin!=null">
                 and good_price &gt;=#{priceMin}

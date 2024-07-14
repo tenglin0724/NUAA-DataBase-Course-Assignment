@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.tl.backend.util.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class GoodServiceImpl implements GoodService {
 
     @Autowired
@@ -29,10 +31,8 @@ public class GoodServiceImpl implements GoodService {
         Map<String,Object> map = ThreadLocalUtil.get();
         String phone =(String) map.get("phone");
         good.setGoodOwner(phone);
-
         good.setGoodCreateTime(Timestamp.valueOf(LocalDateTime.now()));
         good.setGoodUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
-
         //调用mapper接口函数
         goodMapper.add(good);
     }
